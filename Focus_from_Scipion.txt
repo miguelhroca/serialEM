@@ -1,0 +1,54 @@
+   #====================================================
+    # Focus
+    #====================================================
+    focus_method = 0 # 0: Z and OL, 1: Only Z
+
+    # Set TargetDefocus(TD) range and step
+    MinimalDefocus  = -0.7 #[um]
+    MaximumDefocus = -2 #[um]
+    TD_step = 0.2 #[um]
+	
+	#Do you want to use ON THE FLY CORRECTION (also for PhasePlate)
+	#Select 1 if you will use Scipion Reading 0 for normal acquisition
+    
+	SR = 1
+	
+	# Select Output Directory of the *CSV file by Defailt in ATLAS Dir $session_dir
+	SCIPION_FILE_PATH = $session_dir 
+	
+	#-------------------------------------------------
+	If $SR == 0
+		FOCUS_OFFSET_min = 0
+		FOCUS_OFFSET_max = 0
+
+	else
+		FindScriptByName scipion_reading
+		CallScript -1
+	
+	endif
+    #--------------------------------------------------
+    
+	# Set TargetDefocus(TD) range and step.
+    
+	# Add a counter to force OFFSET if it grow more than once
+
+		
+		if $FOCUS_OFFSET_min = 0 #Counter for FOCUS_OFFSET_min
+			Ofset_COUNTER_min = 1
+			CONTmin = 0
+		else 	
+	        CONTmin = $CONT + 1
+			$FOCUS_OFFSET_min = $FOCUS_OFFSET_min * $CONT
+	    endif
+		
+		if $FOCUS_OFFSET_max = 0 #Counter for FOCUS_OFFSET_max
+			Ofset_COUNTER_max = 1
+			CONTmax = 0
+		else 	
+	        CONTmax = $CONT + 1
+			$FOCUS_OFFSET_max = $FOCUS_OFFSET_max * $CONT
+	    endif
+			
+	TD_low  = $MinimalDefocus - $FOCUS_OFFSET_min # This create more negative vallue so higher defocus
+    TD_high = $MaximumDefocus + $FOCUS_OFFSET_max # This create less negative vallue so lower defocus
+  
