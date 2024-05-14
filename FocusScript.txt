@@ -1,0 +1,50 @@
+   #====================================================
+    # Focus
+    #====================================================
+    focus_method = 0 # 0: Z and OL, 1: Only Z
+
+    # Set TargetDefocus(TD) range and step -----------------------------
+   
+    MinimalDefocus  = -0.2 #[um]
+    MaximumDefocus = -3 #[um]
+    TD_step = 0.2 #[um]
+                                          FOCUS_OFFSET_min = 0
+FOCUS_OFFSET_max = 0
+#Do you want to use ON THE FLY CORRECTION
+#Select 1 if you will use Scipion Reading 0 for normal acquisition
+    
+SR = 1
+
+# Select Output Directory of the *CSV file by Defailt in ATLAS Dir $session_dir
+
+                      ReadTextFile SCIPION_FILE_PATH X:\session_path.txt 
+                       ECHO Path for ScipionFocus is set to $SCIPION_FILE_PATH 
+                       #SCIPION_FILE_PATH = $session_dir 
+
+#-------------------------------------------------
+If $SR == 0
+FOCUS_OFFSET_min = 0
+FOCUS_OFFSET_max = 0
+                                           echo using normal limits
+else
+                                           FindScriptByName CheckScipion
+                                           CallScript -1
+                                             
+                      endif             
+                                                               
+   
+                    #--------------------------------------------------
+                    echo $FOCUS_OFFSET_min to enhance minimal defocus
+                    echo $FOCUS_OFFSET_max to reduce maximal defocus         
+                    echo $CounterMin counter min
+                    echo $CounterMax counter max
+                    # modifiying limits according to Scipion evaluation
+
+
+
+    TD_low  = $MinimalDefocus - $FOCUS_OFFSET_min # This create more negative vallue so higher defocus
+    TD_high = $MaximumDefocus + $FOCUS_OFFSET_max # This create less negative vallue so lower defocus
+ 
+echo  ================================================================================================================================ 
+echo                     Target Range for defocus modified from $MinimalDefocus to $MaximumDefocus to $TD_low to $TD_high according to Scipion Evaluation
+echo  =============================================================================================================================
