@@ -1,0 +1,67 @@
+ScriptName CheckScipion
+echo Reading data from SCIPION....
+CheckAstigmatism = 0
+CheckForDrift = 0
+FindScriptByName scipion_reading
+CallScript -1
+
+
+    #ASTIGMATISM#     
+
+
+If $CheckAstigmatism != 0
+     MovePiezoXY -1 0
+     Delay 5 sec
+     FindScriptByName   AlignComaAndStig
+     CallScript -1
+     MovePiezoXY 0 0
+     Delay 10 sec
+endif
+
+
+    #DRIFT#     
+
+If $CheckForDrift != 0
+   DriftWaitTask 0.1 nm 1 0.5 -1 F
+endif
+
+    #FOCUS VARIANCE#     
+
+
+
+echo $FOCUS_OFFSET_min and $FOCUS_OFFSET_max
+
+                                           
+if $FOCUS_OFFSET_min != 0
+     echo FocusOffset_min is not 0 
+              
+     IsVariableDefined CounterMin
+          if $RepVal1 == 0 
+               echo $RepVal1 countermin does not exist
+               CounterMin := 1
+           else 
+                 echo $RepVal1 countermin exist
+                  CounterMin := $CounterMin + 1
+            endif
+
+FOCUS_OFFSET_MIN =  $FOCUS_OFFSET_MIN * $CounterMin
+else
+          CounterMin := 0
+endif
+
+
+if $FOCUS_OFFSET_max != 0
+       echo FocusOffset_max is not 0
+       IsVariableDefined CounterMax
+if $RepVal1 == 0 
+                         echo $RepVal1 countermax does not exist
+                          CounterMax := 1
+                     else 
+                          echo $RepVal1 countermax exist
+                          CounterMax := $CounterMax + 1
+                      endif
+
+FOCUS_OFFSET_MAX =  $FOCUS_OFFSET_MAX * $CounterMax
+else
+CounterMax := 0 
+endif#evaluate focus
